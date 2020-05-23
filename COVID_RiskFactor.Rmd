@@ -23,6 +23,7 @@ header-includes:
   - \usepackage[normalem]{ulem}
   - \usepackage{makecell}
   - \usepackage{xcolor}
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE}
@@ -75,20 +76,21 @@ library(Rtsne)
 
 ## Disclaimer
 
-I am not an epidemiologist or a health official. I am a Biomedical Engineer getting a PhD in Immunology from Duke, and an amateur Data Scientist. Conclusions made within the project, are not be considered as fact.
+I am not an epidemiologist or a health official. I am a Biomedical Engineer getting a PhD in Immunology from Duke, and an amateur Data Scientist. Conclusions made within the project, are not to be considered as fact.
 
 ## Introduction
 At the time of completion of this project the world is in the throws of the COVID-19 pandemic. Over 300,000 people's deaths have been attributed to COVID-19, with the United States being responsible for nearly a third, as of May 23rd. In order to slow the spread of the virus, many states elected to issue stay-at-home orders to reduce transmission. Stay-at-home orders, among other interventions, have resulted in a "bending" of the case and death curves in the US. At this time, many states are beginning lifting these orders with a wait and see approach to determine if transmission has slowed to a point that the healthcare system can handle. 
 
 While it is abundantly evident that COVID-19 has had a profound effect globally and in the US, it has also become clear that some areas were effected worse than others. What factors determine how quickly the virus grew in a given area remain to be totally understood. 
 
-This purpose of this project is to firstly complete the Capstone requirement for the Harvard Edx Data Science Specialization, and also to explore an interesting dataset for a contemporary issue. These data that will be analyzed is publically available information related to socio-economic and health data from counties and how they have been effected by the ongoing COVID-19 pandemic. The data was cleaned and aggregated by John Davis [@JDruns](https://twitter.com/JDruns "John Davis Twitter"). Information detailing the source of the data, and how it was assembled can be found in John's [kaggle notebook link](https://www.kaggle.com/johnjdavisiv/us-counties-weather-health-covid19-data). The data has information on 2,896 counties in the United States (US), and their County-level health and socioeconomic data. SOme counties are not included in the dataset because of the sparsity of information availabel for these counties. 
+This purpose of this project is to firstly complete the Capstone requirement for the Harvard Edx Data Science Specialization, and also to explore an interesting data set for a contemporary issue. These data that will be analyzed is publicly available information related to socio-economic and health data from counties and how they have been effected by the ongoing COVID-19 pandemic. The data was cleaned and aggregated by John Davis [JDruns](https://twitter.com/JDruns). Information detailing the source of the data, and how it was assembled can be found in John's [kaggle notebook link](https://www.kaggle.com/johnjdavisiv/us-counties-weather-health-covid19-data). The data has information on 2,896 counties in the United States (US), and their County-level health and socioeconomic data. Some counties are not included in the data set because of the sparsity of information available for these counties. 
 
 **Sources for Data Analyzed**
+
 1. New York Times - case and fatality data
-2. 2016 CDC Social Vulnerablity Data
+2. 2016 CDC Social Vulnerability Data
 3. 2020 Community Health Rankings Data
-  + The bulk of the socioecomic and health data comes from here, and their methodology and definitions for these metrics can be found [here](https://www.countyhealthrankings.org/explore-health-rankings/measures-data-sources/county-health-rankings-model/policies-and-programs) 
+  *The bulk of the socio-economic and health data comes from here, and their methodology and definitions for these metrics can be found [here](https://www.countyhealthrankings.org/explore-health-rankings/measures-data-sources/county-health-rankings-model/policies-and-programs) 
 
 These data will be used to visualize how COVID-19 has effected counties across the US, define an outcome that will be predicted with machine learning, and validate the model we generate. 
 
@@ -97,11 +99,12 @@ These data will be used to visualize how COVID-19 has effected counties across t
 Since there is no specific success criteria defined for this project beyond demonstrating learning, the following criteria will also be added. Broadly speaking, success will be defined as being able to stratify counties based off an important COVID-19 related outcome, and being able to successfully predict that outcome from the available socio-economic and health data. 
 
 1. Demonstrate understanding of Data Science for the purpose of the Capstone Project
-  +Data Visualization
-  +Data Wrangling 
-  +Machine Learning
+ 
+  *Data Visualization
+  *Data Wrangling 
+  *Machine Learning
 2. Define outcome to be predicted by Machine Learning Algorithm
-3. Build and optomize model for predicting outcome
+3. Build and optimize model for predicting outcome
 4. Identify factors that were important in driving accuracy of the model
 5. Assess Accuracy of the model
 
@@ -135,7 +138,7 @@ red_covid  %>%
   kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-These data contain information for 2,896 counties over 115 days startin in January, and ending in mid-May. The first confirmed COVID-19 related death was widely considered to be on Feb.29th, but it was later determined to have been as early as Feb. 6th [Source](https://www.nbcnews.com/news/us-news/first-u-s-coronavirus-death-happened-weeks-earlier-originally-believed-n1189286).
+These data contain information for 2,896 counties over 115 days starting in January, and ending in mid-May. The first confirmed COVID-19 related death was widely considered to be on Feb.29th, but it was later determined to have been as early as Feb. 6th [Source](https://www.nbcnews.com/news/us-news/first-u-s-coronavirus-death-happened-weeks-earlier-originally-believed-n1189286).
 
 Additionally, the data contains over 200 county level factors constituted by the socio-economic and health data previously mentioned.
 
@@ -174,9 +177,9 @@ logdeathcount <- red_covid %>% group_by(fips) %>%  filter(date == max(date)) %>%
   summarise(totdeath = log(deaths),county = first(county)) 
 plot_usmap(region = "counties",data = logdeathcount, values = "totdeath", color = "black") +
   scale_fill_viridis_c(name = "Log(Total Death per County)", label = scales::comma) +
-  theme(legend.position = "right")
+  theme(legend.position = "right") + ggtitle("Log Transformed\nTotal COVID-19 Deaths per County\nas of 5-14-20")
 ```
-This visual shows where the hotspots are in a more granular view. Additionally it is clear that there are many counties that haven't experienced any deaths yet. 
+This visual shows where the hot-spots are in a more granular view. Additionally it is clear that there are many counties that haven't experienced any deaths yet. 
 
 ```{r summary-of-deathless-counties}
 #counties with no deaths
@@ -186,7 +189,7 @@ red_covid %>% filter(date == max(date)) %>%
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
 
-Surprisingly, over 40 percent of the counties with data have yet to have a COVID related death. This is improtant for model building, because if we try to predict deaths, roughly 60 percent of the data will not have a death outcome to predict. 
+Surprisingly, over 40 percent of the counties with data have yet to have a COVID related death. This is important for model building, because if we try to predict deaths, roughly 60 percent of the data will not have a death outcome to predict. 
 
 It is worth noting that this is not because the death data is missing, as there are zero missing values. 
 
@@ -195,7 +198,7 @@ It is worth noting that this is not because the death data is missing, as there 
 sapply(red_covid,function(x)sum(is.na(x)))
 ```
 ## Outcome Definition
-Because the county data has more observations, as there are more counties than states, we will define our outcome using this variation of the dataset.Below is a visualization of how COVID-19 deaths have grown over time in counties that have documented more than 10 COVID-19 deaths. For the purpose of this project, less than 10 deaths in a county over 115 days observed will be considered negligible growth. 
+Because the county data has more observations, as there are more counties than states, we will define our outcome using this variation of the data set.Below is a visualization of how COVID-19 deaths have grown over time in counties that have documented more than 10 COVID-19 deaths. For the purpose of this project, less than 10 deaths in a county over 115 days observed will be considered negligible growth. 
 
 ```{r plotting-county-death-v-time}
 #plotting by county over time 
@@ -232,7 +235,7 @@ red_covid %>%
   theme(legend.position = "none") + 
   ggtitle("COVID19 log(deaths) by US county")
 ```
-From this visual we can conclude that around 20 days after a conties 10th death, many of the curves levelled off. Interestingly, many of the log(death) curves are  mostly linear for the first 14 days. 
+From this visual we can conclude that around 20 days after a counties 10th death, many of the curves leveled off. Interestingly, many of the log(death) curves are  mostly linear for the first 14 days. 
 
 ```{r fourteen-days-logdeath}
 #plotting first 14 days with log death by county
@@ -246,9 +249,10 @@ red_covid %>%
   geom_line(alpha = 0.4) +
   xlab(sprintf("Days since %i deaths", min_death)) + 
   theme(legend.position = "none") + 
-  ggtitle("COVID19 deaths by US county")
+  ggtitle("COVID19 log(deaths) by US county\nFirst 14 Days")
 ```
-This suggests that we can perform linear regression, and the slope coeffecient of the fitted line will describe the growth rate for each county, with higher slopes meanign faster COVID-19 fatality growth. 
+
+This suggests that we can perform linear regression, and the slope coefficient of the fitted line will describe the growth rate for each county, with higher slopes meaning faster COVID-19 fatality growth. 
 
 ```{r slope-calculation}
 #log transform and curve fit
@@ -266,7 +270,9 @@ slopes <- red_covid %>%
   filter(days <= 14) %>% select(days,logdeaths) %>% 
   do(get_slope(.)) %>% arrange(desc(slope)) %>% filter(slope > 0)
 ```
+
 In order to determine if our assumption of linearity was correct we can also calculate the $R^2$ for the linear fits for each county. 
+
 ```{r r-sqrd-calculation}
 get_rsqrd <- function(data){
   fit <- lm(logdeaths ~ days, data = data)
@@ -281,20 +287,24 @@ rsqrds <- red_covid %>%
   filter(days <= 14) %>% select(days,logdeaths) %>% 
   do(get_rsqrd(.)) %>% arrange(desc(rsqrd)) %>% filter(fips %in% slopes$fips) %>% replace_na(list(rsqrd = 1))
 #average of r squared
-mean(rsqrds$rsqrd)
+avg <- mean(rsqrds$rsqrd)
 ```
+
 The average $R^2$ for the linear fits is `r mean(rsqrds$rsqrd)`, which is suitable for the purpose of this project. 
+
+$R^2$ is calculated by the following equation. 
 
 $$R^2=1-\frac{\sum y_{i}-\hat{y}_{i}}{\sum y_{i}-\overline{y}_{i}}$$
 Where $y_{i}$ is the actual value, $\hat{y}_{i}$ is the predicted value, and $\overline{y}_{i}$ is the mean of $y$ values.
 
 By looking at the distribution of the slopes, it appears that the distribution is relatively normal, although right skewed. 
+
 ```{r distribution-of-slopes}
 #calculating average slope, or growth, of log data 
 mu <-mean(slopes$slope)
 #showing distribution of slope data with a red line at the average
 slopes %>% ggplot(aes(slope)) + geom_histogram() + geom_vline(xintercept =  mu, col = "red") +
-  geom_text(aes(x=mu*1.025, label="Average", y=60), colour="red", angle=90) +
+  geom_text(aes(x=mu*1.04, label="Average", y=60), colour="red", angle=90) +
   labs(title ="Distribution of log(death) slopes") + ylab("Number of Counties") +
        xlab("Slope of Log(death) vs. Time") 
 ```
@@ -315,7 +325,8 @@ plot_usmap(region = "counties",data = fac_plot_dat, values = "slope", color = "b
   scale_color_brewer(palette = "Set2")+
   theme(legend.position = "right") + 
   labs(fill = "COVID Growth Rate") +
-  scale_fill_viridis_d()
+  scale_fill_viridis_d() +
+  ggtitle("COVID Growth Category by County")
 ```
 
 The counties with the top 10 growth rates were primarily the ones people heard on the news. `fct_slp` is the variable name being used to store the growth category data. 
@@ -347,7 +358,7 @@ Again, from the above graph it becomes evident that the majority of counties exp
 ```{r summarising-category-proportions}
 #showing their abundance in a summary
 dat %>% group_by(fct_slope) %>% 
-  summarise(n = n()) %>% mutate(freq = n / sum(n)) %>% 
+  summarise(n = n()) %>% mutate(frequency = n / sum(n)) %>% 
    kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
@@ -378,11 +389,12 @@ For this data, anything with more than 50 percent missing data, will be consider
 
 ## Feature Engineering
 ### kNN Imputation
-KNN imputation is a method for restoring missing data. The maintainer of the `caret` package, which will be the workhorse for the majority of the machine learning work to be done [describes it this way](https://rdrr.io/rforge/caret/man/preProcess.html), "k-nearest neighbor imputation is carried out by finding the k closest samples (Euclidian distance) in the training set. Imputation via bagging fits a bagged tree model for each predictor (as a function of all the others)". More can be learned about kNN imputation in [this peer-reviewed article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4959387/).
 
-Euclidian distance is defined as:
+kNN imputation is a method for restoring missing data. The maintainer of the `caret` package [describes it this way](https://rdrr.io/rforge/caret/man/preProcess.html), "k-nearest neighbor imputation is carried out by finding the k closest samples (Euclidean distance) in the training set. Imputation via bagging fits a bagged tree model for each predictor (as a function of all the others)". More can be learned about kNN imputation in [this peer-reviewed article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4959387/).
+
+Euclidean distance is defined as:
 $$d(p,q) =\sqrt{\sum_{i=1}^{n}(p_{i}-q_{i})^2}$$
-More information on Euclidian Distance can be found [here](https://en.wikipedia.org/wiki/Euclidean_distance)
+More information on Euclidean Distance can be found [here](https://en.wikipedia.org/wiki/Euclidean_distance)
 
 ```{r Knn-impute}
 #splitting data for imputation on predictors
@@ -392,18 +404,20 @@ y <- clean_dat[,length(clean_dat)]
 impute_proc <- preProcess(x,method = "knnImpute")
 impute_dat <- predict(impute_proc,x)
 #verifying missing values have been filled
-sum(sapply(impute_dat,function(x)sum(is.na(x))))
+nasum <- sum(sapply(impute_dat,function(x)sum(is.na(x))))
 #removing feature where missing values were not filled
 #this also normalizes the data
 impute_dat_clean <- impute_dat %>% 
   select(-presence_of_water_violation)
 
 #verifying missing values have been filled
-sum(sapply(impute_dat_clean,function(x)sum(is.na(x))))
+nasum2 <- sum(sapply(impute_dat_clean,function(x)sum(is.na(x))))
 ```
+
 Part of the kNN imputation includes normalizing the predictors.Here Normalization means, for each predictor a transformation is applied so the resulting mean is 0 and the standard deviation is 1. 
 
-###Near Zero Variance
+### Near Zero Variance
+
 Feature with near-zero variance will be uninformative, and will bog down the machine learning algorithm. 
 
 ```{r nzv, echo = T}
@@ -412,7 +426,7 @@ nzv <- nearZeroVar(impute_dat_clean, saveMetrics = T)
 #Finding how many features hav near zero variance
 sum(nzv$nzv)
 ```
-Fortunately, none of the predictors have nearly zero variance, so we will maintain them all. 
+Fortunately, none of the predictors have nearly zero variance, so they all will be maintained.  
 
 ### Multicolinearity - Removing Highly Correlated Features
 A simple definition of Correlation is when two or more features vary together. The formula is:
@@ -421,22 +435,34 @@ $$cor_{x,y}=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_{i=1}
 Removing one of the two features that correlate together, reduces the importance of that pair of features. For the purpose of identifying features that were most important for generating an accurate prediction, removing the highly correlated features will be important. 
 
 This is a summary of the correlation data:
+
 ```{r corr-summary}
+#Looking for variables that have correlate highly with eath other
+#removing county names, state names, and fips, and outcome
+x1 <- impute_dat_clean[,-(1:3)]
+#calculating correlation matarix
+cormat <- cor(x1)
+#Showing summary of correlation
+corrs <-tibble(Correlation = cormat[upper.tri(cormat)])
 #Showing summary of correlation
   summary(corrs) %>% 
   kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-This can also be visualized in a heatmap.
-```{r cor-heatmap}
+
+This can also be visualized in a heat-map.
+
+```{r cor-heatmap, fig.align='center'}
   #calculating correlation and p value with rcorr function
 cor_ext <- rcorr(as.matrix(x1))
 #plotting heatmap of correlated features
 corrplot(cor_ext$r,type = "upper",order = "hclust", method = "shade",
          p.mat = cor_ext$P,sig.level = .01, insig = "blank",tl.pos = "n")
 ```
+
 Here is a table of the features that are most strongly correlated:
-```{r cor-table}
+
+```{r cor-table,fig.align='left'}
 #establishing function to reformat matrix that rcorr returns
 flattenCorrMatrix <- function(cormat, pmat) {
   ut <- upper.tri(cormat)
@@ -450,44 +476,50 @@ flattenCorrMatrix <- function(cormat, pmat) {
 #using function to flatten matrix
 flatcor <- tibble(flattenCorrMatrix(cor_ext$r,cor_ext$P))
 #showing most significantly correlated variables above cutoff threshold
-flatcor %>% filter(cor >.75) %>% arrange(desc(p))
+flatcor %>% filter(cor >.75) %>% arrange(desc(p)) %>% 
+  slice(1:10) %>% 
+  kable(.,"latex",booktabs = T) %>% 
+  kable_styling(latex_options =c("striped","condensed"),font_size = 9)
 ```
+
 Below is a distribution plot showing the degree of correlation across features.
-```{r corr-plot}
-#Looking for variables that have correlate highly with eath other
-#removing county names, state names, and fips, and outcome
-x1 <- impute_dat_clean[,-(1:3)]
-#calculating correlation matarix
-cormat <- cor(x1)
+
+```{r corr-plot, fig.align='center'}
+
 #plotting distribution of Feature Correlation
 tibble(corrs = cormat[upper.tri(cormat)]) %>% 
-  ggplot(aes(corrs)) + geom_histogram() + geom_vline(xintercept = .75,color = "red") +
-  geom_text(aes(x=.75*1.025, label="Cutoff for High Correlation", y=600), 
+  ggplot(aes(corrs)) + geom_histogram() + geom_vline(xintercept = .8,color = "red") +
+  geom_text(aes(x=.8*1.04, label="Cutoff for High Correlation", y=600), 
             colour="red", angle=90, text=element_text(size=11)) +
   ggtitle("Distribution of Correlations of Features") +
   ylab("Count") + xlab("Correlation Values")
 ```
-Considering this, a cutoff for being considered highly correlated will be set at .75. 
 
-A dataset is created that has the highly correlated features removed.
+Considering this, a cutoff for being considered highly correlated will be set at .8. 
+
+A data set is created that has the highly correlated features removed.
+
 ```{r removing-highly-cor-features}
 #Identifying highly correlated features above cutoff
-highlycor <- findCorrelation(cormat,cutoff = .75,exact = T)
+highlycor <- findCorrelation(cormat,cutoff = .8,exact = T)
 #removing highly correlated features
 x1_cor_out <- x1[,-highlycor]
 #making new correlation matrix for data without highly correlated features
 cormat2 <- cor(x1_cor_out)
 corrs2 <- tibble(corrs = cormat2[upper.tri(cormat2)])
 ```
+
 After removing the highly correlated features the distribution of correlated features looks more normal. 
 
-```{r corr-out-distribution}
+```{r corr-out-distribution, fig.align='center'}
 #plotting correlation ditribution
 corrs2 %>% ggplot(aes(corrs)) + geom_histogram() +
   ggtitle("Distribution of Correlations of Features") +
   ylab("Count") + xlab("Correlation Values")
 ```
-Additionally the heatmap of correlations looks more symetrical.
+
+Additionally the heat-map of correlations looks more symmetrical.
+
 ```{r cor-out-heatmap}
 cor_ext_cor_out <- rcorr(as.matrix(x1_cor_out))
 corrplot(cor_ext_cor_out$r,type = "upper",order = "hclust", method = "shade",
@@ -496,12 +528,16 @@ corrplot(cor_ext_cor_out$r,type = "upper",order = "hclust", method = "shade",
 The imputed, normalized, and un-correlated data is now ready for the next step. 
 
 ## Clustering
+
 Clustering techniques seek to visualize how categories of data might group together in a dimensionally reduced space. This enables us to see if our categories would naturally group together in an unsupervised way based on their features.  
-### Principle COmponenta Analysis - PCA
-PCA seeks to reduce dimensionality of data by ensuring that the new features - called principle components (PCs) - are orthagonal to each other and thus should be independent and uncorrelated. PCA is a linear algorithm.
+
+### Principle Components Analysis - PCA
+
+PCA seeks to reduce dimensionality of data by ensuring that the new features - called principle components (PCs) - are orthogonal to each other and thus should be independent and uncorrelated. PCA is a linear algorithm.
 
 The plot of the first two principle components (PC) of the data without highly correlated variables removed, is below. 
-```{r cor-pca}
+
+```{r cor-pca, fig.align='center'}
 #plotting pca with correlated features included
 pca_w_cors <- prcomp(x1)
 #plotting outcome clusters with PC1 and PC2
@@ -516,10 +552,12 @@ sum_pca_w_cors$importance[,1:2] %>%
   kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-It appears that the first two PCs do not adequately seperate the groups. Although it appears the high growth counties have little overlap with the counties that experienced little to no growth. We can see that the first two principle components only explain about 50 percent of the total variance in the data. 
 
-If the highly correlated variables are removed, this may improve the visualisation of the data. Below is the PC analysis plot of that data. 
-```{r cor-out-pca}
+It appears that the first two PCs do not adequately separate the groups. Although it appears the high growth counties have little overlap with the counties that experienced little to no growth. We can see that the first two principle components only explain about 50 percent of the total variance in the data. 
+
+If the highly correlated variables are removed, this may improve the visualization of the data. Below is the PC analysis plot of that data. 
+
+```{r cor-out-pca, fig.align='center'}
 #plotting pca without correlated features
 pca_wo_cors <- prcomp(x1_cor_out)
 data.frame(pca_wo_cors$x[,1:2], slope_category = y) %>% 
@@ -533,13 +571,17 @@ sum_pca_wo_cors$importance[,1:2] %>%
   kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-Here we see more overlap with the the all the growth categories, this suggests the data without the correlated features will have worse ability to resolve differences in groups. The first two PCs of this dataset explain only 30 percent. Further demonstrating that removing correlated variables might reduce the ability of the data to resolve the growth categories. 
+
+Here we see more overlap with the the all the growth categories, this suggests the data without the correlated features will have worse ability to resolve differences in groups. The first two PCs of this data set explain about 30 percent. Further demonstrating that removing correlated variables might reduce the ability of the data to resolve the growth categories. 
 
 ### t-SNE
-T-distributed Stochastic Neighbor Embedding (t-SNE) is a non-linear dimensionality reduction method. t-SNE, like kNN, uses Euclidian distance but instead converts that distance to a conditional probablity. This probability is the likelihood that a given value would select another value to be close to it. The formula for this conditional probabilty is below:
+
+T-distributed Stochastic Neighbor Embedding (t-SNE) is a non-linear dimensionality reduction method. t-SNE, like kNN, uses Euclidean distance but instead converts that distance to a conditional probability. This probability is the likelihood that a given value would select another value to be close to it. The formula for this conditional probability is below:
 
 $$p_{j|i}=\frac{exp(-||x_i-x_j||^2/2\sigma_i^2)}{\sum_{k\neq i} exp(-||x_i-x_j||^2/2\sigma_i^2)}$$
-Below is the t-SNE plot for the data that includes the correlated features, as this was the dataset that clustered better with PCA.
+Below is the t-SNE plot for the data that includes the correlated features, as this was the data set that clustered better with PCA.
+
+
 ```{r t-sne}
 #plotting tsne without correlated features
 set.seed(1993)
@@ -555,8 +597,10 @@ data.frame(Dim1 = tsne_out$Y[,1],Dim2 = tsne_out$Y[,2]) %>%
 This visualization shows us that non-linear distance based methods, like kNN, may successfully identify the differences between the negligible growth counties and the above average growth counties. 
 
 ## Modelling
-This section will focus on using machine learning algorithms to idenify socio-economic and health predictors that are imporant for classifying the the degree of growth experienced in the early days of COVID-19.
+This section will focus on using machine learning algorithms to identify socio-economic and health predictors that are important for classifying the the degree of growth experienced in the early days of COVID-19.
+
 ### Data Partitioning
+
 The first step in training the models, will be partitioning data into training and validation sets. 
 
 ```{r splitting-data,echo=TRUE}
@@ -572,14 +616,16 @@ validation_cor <-cor[-edxIndex,]
 edx_no_cor <- nocor[edxIndex,]
 validation_no_cor <- nocor[-edxIndex,]
 ```
+
 ### Naive kNN
-Before parameter tuning, an unmodified kNN will be performed on the data with correlates and without to determine which dataset produces the most accurate predictions. Prediction accuracy will be evaluated using repeated 10-fold cross validation. Cross-validation here means the training data will be split into 10 subsets, one subset will be reserved as the validation subset, and this is repeated until each subset has been used as the validation subset. 
+Before parameter tuning, an unmodified kNN will be performed on the data with correlates and without to determine which data set produces the most accurate predictions. Prediction accuracy will be evaluated using repeated 10-fold cross validation. Cross-validation here means the training data will be split into 10 subsets, one subset will be reserved as the validation subset, and this is repeated until each subset has been used as the validation subset. 
 
 ```{r kNN-w-wo-corrs}
 #establishing 10-fold cv object
 fitControl <- trainControl(## 10-fold CV
-  method = "cv",
-  number = 10)
+  method = "repeatedcv",
+  number = 10,
+  repeats = 10)
 
 #untuned knn for cor data
 set.seed(1993)
@@ -588,24 +634,26 @@ knn_cor_fit <- train(fct_slope ~ ., data = edx_cor,
                      trControl = fitControl)
 
 #storing results
-results <- data.frame(Method = "Untuned knn",Data = "Complete Training",Accuracy = max(knn_cor_fit$results$Accuracy))
+results <- data.frame(Method = "Untuned kNN",Data = "Complete Training",Accuracy = max(knn_cor_fit$results$Accuracy))
 
 #untuned knn for no cor data
 knn_no_cor_fit <- train(fct_slope ~ ., data = edx_no_cor,
                         method = "knn",
                         trControl = fitControl)
 #storing results
-results <- results %>% add_row(Method = "Untuned knn",
+results <- results %>% add_row(Method = "Untuned kNN",
                                Data = "Training w/o Corr Features", 
                                Accuracy = max(knn_no_cor_fit$results$Accuracy))
 
 results %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-This data suggests that the data that includes the correlated features produces more accurate predictions. We will tune the kNN algorithm on this dataset as aresult. 
+
+This data suggests that the data that includes the correlated features produces more accurate predictions. We will tune the kNN algorithm on this data set as a result. 
 
 ### KNN Optimization
-Optimization will begin with determining if any transformations improve the accuracy of predictions. Because the imputation process normalizes the data it is already transformed such that the the average of each feature is 0 and the standard deviation is 1. Two more common transformations are to scale the data such that it falls between 0 and 1, and a Yeo-Johnson transormation. Yeo-Johnson is a power transformation that further stabilizes variance, and makes the data more normal.
+Optimization will begin with determining if any transformations improve the accuracy of predictions. Because the imputation process normalizes the data it is already transformed such that the the average of each feature is 0 and the standard deviation is 1. Two more common transformations are to scale the data such that it falls between 0 and 1, and a Yeo-Johnson transformation. Yeo-Johnson is a power transformation that further stabilizes variance, and makes the data more normal.
+
 ```{r reg-yeo-optim}
 #applying knn with regularized parameters
 knn_cor_fit_scale <- train(fct_slope ~ ., data = edx_cor,
@@ -614,7 +662,7 @@ knn_cor_fit_scale <- train(fct_slope ~ ., data = edx_cor,
                          preProc = c("range"))
 
 #storing results
-results <- results %>% add_row(Method = "Scaled KNN",
+results <- results %>% add_row(Method = "Scaled kNN",
                                Data = "Complete Training", 
                                Accuracy = max(knn_cor_fit_scale$results$Accuracy))
 
@@ -627,20 +675,20 @@ knn_cor_fit_yeo <- train(fct_slope ~ ., data = yj_edx_cor,
                          trControl = fitControl)
 
 #storing results
-results <- results %>% add_row(Method = "Yeo-Johnson KNN",
+results <- results %>% add_row(Method = "Yeo-Johnson kNN",
                                Data = "Complete Training", 
                                Accuracy = max(knn_cor_fit_yeo$results$Accuracy))
 
 results %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-This shows that for this data, the Yeo-Johnson transformed data improves the prediction, while scaling the data does not. 
+This shows that for these transformations, neither the Yeo-Johnson or the scaling improves the accuracy of the predictions. 
 
-The Yeo-Johnson transformed data will be used moving forward for the rest of model training. Using this transformed data, the k-nearest neighbor will be tuned, to maximize accuracy. 
+As a result just the normalized data will be used moving forward for the rest of model training. Using this transformed data, the k-nearest neighbor will be tuned, to maximize accuracy. 
 
 ```{r k-tuning-and-k-plotting}
 #aplying parameter tuning to knn
-knn_cor_param <- train(fct_slope ~ ., data = yj_edx_cor,
+knn_cor_param <- train(fct_slope ~ ., data = edx_cor,
                          method = "knn",
                          trControl = fitControl,
                          tuneGrid = data.frame(k = seq(3,55,2)))
@@ -649,7 +697,7 @@ knn_cor_param <- train(fct_slope ~ ., data = yj_edx_cor,
 ggplot(knn_cor_param) + ggtitle("K-tuned Accuracy Optimization")
 
 #storing results
-results <- results %>% add_row(Method = "YJ Tuned KNN",
+results <- results %>% add_row(Method = "Tuned kNN",
                                Data = "Complete Training", 
                                Accuracy = max(knn_cor_param$results$Accuracy))
 
@@ -659,22 +707,20 @@ results %>% kable(.,"latex",booktabs = T) %>%
 The K-tuned accuracy plot makes it evident that the accuracy peaks at 11 and then declines. The default k-values are 5,7, and 9 so it is not surprising that tuning only minorly improves the accuracy. 
 
 This will be the the model that we will use for the prediction on the validation set. Before determining how the trained model performs on the validation set, the features that were important for the accuracy of the prediction will be analyzed.
+
 ### Variable Importance - kNN
  
 
 ```{r cor-out-knn-varimp}
-#yj transform
-yj_pre_proc_out <- preProcess(edx_no_cor[,-ncol(edx_no_cor)],method = c("YeoJohnson"))
-yj_edx_cor_out <- predict(yj_pre_proc_out,edx_no_cor)
 
 #crating model for non correlated data
-knn_no_cor_param_norm <- train(fct_slope ~ ., data = yj_edx_cor_out,
+knn_no_cor_param_norm <- train(fct_slope ~ ., data = edx_no_cor,
                                method = "knn",
                                trControl = fitControl,
                                tuneGrid = data.frame(k = seq(3,55,2)),
                                )
 #storing results
-results <- results %>% add_row(Method = "YJ Tuned KNN",
+results <- results %>% add_row(Method = "Tuned kNN",
                                Data = "Training w/o Corr Features", 
                                Accuracy = max(knn_no_cor_param_norm$results$Accuracy))
 
@@ -682,31 +728,31 @@ results <- results %>% add_row(Method = "YJ Tuned KNN",
 ggplot(knn_no_cor_param_norm) + 
   ggtitle("Accuracy Optimization \nfor Data without Correlated Features")
 ```
-The k-tuning on the data without highly correlated features, seems to converge instead of peak. The performance of the kNN algorithm on the data without highly correlated features performs worse than that the comlete training data. 
+The k-tuning on the data without highly correlated features, seems to converge instead of peak. The performance of the kNN algorithm on the data without highly correlated features performs worse than that the complete training data. 
 
 ```{r varimp-knn}
 varimp_knn <- varImp(knn_no_cor_param_norm)
 impvars_knn <- varimp_knn$importance %>% add_rownames() %>% arrange(desc(Above_Avg)) %>% slice(1:10) %>% pull(rowname)
-impvars_knn %>% kable(.,"latex",booktabs = T) %>% 
+data_frame(Important_Features = impvars_knn) %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-The top 10 important features, roughly describe urban areas. From our previous covid growth plots displayed on maps, we know that this is often where the growth was the highest. It is interesting to seethese feaures identified by a machine learning algorithm, even if some of them may have been intuitive. 
+The top 10 important features, roughly describe urban areas. From our previous COVID-19 growth plots displayed on maps, we know that this is often where the growth was the highest. It is interesting to see these features identified by a machine learning algorithm, even if some of them may have been intuitive. 
 
-We will confirm these feaures with a second machine learning model to determine the there is consensus on what factors are important between algorithms. 
+We will confirm these features with a second machine learning model to determine the there is consensus on what factors are important between algorithms. 
 
 ### Variable Importance - CART
 Classification and Regression Trees (CART), is a machine learning algorithm where a series of yes or no questions are asked and the answer generates a branch, which eventually leads to a classification. The decision trees these models produce are easy to interpret, and visually show which factors are important. 
 
 ```{r cart-varimp-plot}
 #for variable importance and w/cor for prediction
-rpart_no_cor_fit <- train(fct_slope ~ ., data = yj_edx_cor_out,
+rpart_no_cor_fit <- train(fct_slope ~ ., data = edx_no_cor,
                           method = "rpart",
                           trControl = fitControl,
                           tuneGrid = data.frame(cp = seq(.001,.02,.002)))
 #plotting CART tree
-fancyRpartPlot(rpart_no_cor_fit$finalModel)
+fancyRpartPlot(rpart_no_cor_fit$finalModel,sub = "")
 #storing results 
-results <- results %>% add_row(Method = "YJ Tuned CART",
+results <- results %>% add_row(Method = "Tuned CART",
                                Data = "Training w/o Corr Features", 
                                Accuracy = max(rpart_no_cor_fit$results$Accuracy))
 
@@ -718,16 +764,18 @@ The CART model does not perform as as well as the kNN model, but the decision tr
 ```{r impvars}
 varimp_cart <- varImp(rpart_no_cor_fit)
 impvars_cart <-  varimp_cart$importance %>% add_rownames() %>% arrange(desc(Overall)) %>% slice(1:10) %>% pull(rowname)
-impvars <- data_frame(Method = "KNN", Imp_Features = impvars_knn)
+impvars <- data_frame(Method = "kNN", Important_Features = impvars_knn)
 impvars <- impvars %>% add_row(Method = "CART",
-                               Imp_Features = impvars_cart)
+                               Important_Features = impvars_cart)
 
 impvars %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-The important variables in both models are largely overalapping, and the interpretation is still that cities tend to see higher growth than more rural areas. 
+The important variables in both models are largely overlapping, and the interpretation is still that cities tend to see higher growth than more rural areas. 
+
 ### Model Validation
-Finally, the Yeo-Johnson transformed, normalized kNN model with correlates will be used to predict the growth category for each county in the validation dataset. 
+
+The Yeo-Johnson transformed, normalized kNN model with correlates will be used to predict the growth category for each county in the validation data set. 
 
 # Results
 ```{r validation calac}
@@ -735,8 +783,8 @@ Finally, the Yeo-Johnson transformed, normalized kNN model with correlates will 
 y_hat_valid <- predict(knn_cor_param,validation_cor)
 cf <- confusionMatrix(y_hat_valid,validation_cor$fct_slope)
 
-cf$table %>% kable(.,"latex",booktabs = T) %>% 
-  kable_styling(latex_options =c("striped"),font_size = 11)
+#cf$table %>% kable(.,"latex",booktabs = T) %>% 
+  #kable_styling(latex_options =c("striped"),font_size = 11)
 
 
 cf$byClass[,c("F1","Balanced Accuracy")] %>% 
@@ -746,6 +794,7 @@ cf$byClass[,c("F1","Balanced Accuracy")] %>%
 This data shows that the above average growth counties and the negligible growth counties were classified with reasonable accuracy, although the below average counties were harder to predict. This was what the clustering data would have made us assume. 
 
 How the correct predictions line up with different slopes, will inform if the border cases were the hardest to define. 
+
 ```{r distrib-slope-correct-predict}
 #making validation dataset with slope added back in and whether guess was correct or not
 validation_w_slope <- validation_cor %>% 
@@ -757,7 +806,7 @@ validation_w_slope %>% ggplot(aes(slope)) +
   geom_histogram(aes(fill = correct)) +
   scale_y_continuous(trans = "log10") +
   geom_vline(xintercept =  mu, col = "red") +
-  geom_text(aes(x=mu*1.025, label="Average for Above 0 slopes", y=100), 
+  geom_text(aes(x=mu*1.05, label="Average for Above 0 slopes", y=500), 
             colour="red", angle=90)+
   ggtitle("Distribution of Slopes and Accuracy") +
   ylab("log_10(Counts)") + xlab("Slope of Log_10(Deaths) vs. Time")
@@ -769,24 +818,24 @@ Below is a summary of the accuracies:
 
 ```{r final-results-table}
 #adding results
-results <- results %>% add_row(Method = "YJ Tuned kNN",
+results <- results %>% add_row(Method = "Tuned kNN",
                                Data = "Complete Validation", 
                                Accuracy =cf$overall["Accuracy"])
 
 results %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-The Yeo-Johnson transformed,normalised data in the kNN model successfully predicted growth category for each county `r cf$overall["Accuracy"]` percent of the time.
+The normalized data, with tuned parameters, in the kNN model successfully predicted the growth category for each county `r cf$overall["Accuracy"]` percent of the time.
 
 # Conclusions
 ## Summary and Future Directions
-The COVID-19 pandemic has led to a tremendous loss of life, and totally transformed society in a matter of a few months.However this catastrophy has not had an equal effect in all regions of the world, and within the US. Leaving many to wonder, what determines whether the virus will creep along in a given area or if it will see explosive growth.This project focused on utilizing county-level COVID-19, socio-economic and health data to determine what factors were imporant in the early days of the pandemic. The rate of growth in COVID-19 related fatalities in a given county was selected as the outcome to be predicted as opposed to cases because case numbers are largely a function of amount and type of testing being conducted, which varies widely across counties. However, the fatality data is more standardized, although surely contains some reporting error still. The growth of COVID-19 related fatalities in the first 14 days after the 10th death in the county was examined, becasue it was largely before any interventions were in place. Examining the growth rates beyond that point would have been confounded by how early stay-at-home orders were put in place and how well they were adhered to. The growth rate in this early time window is a better refelection of that counties natural vulnerability.
+The COVID-19 pandemic has led to a tremendous loss of life, and totally transformed society in a matter of a few months. However this catastrophe has not had an equal effect in all regions of the world, and within the US. Leaving many to wonder, what determines whether the virus will creep along in a given area or if it will see explosive growth.This project focused on utilizing county-level COVID-19, socio-economic and health data to determine what factors were important in the early days of the pandemic. The rate of growth in COVID-19 related fatalities in a given county was selected as the outcome to be predicted as opposed to cases because case numbers are largely a function of amount and type of testing being conducted, which varies widely across counties. However, the fatality data is more standardized, although surely contains some reporting error still. The growth of COVID-19 related fatalities in the first 14 days after the 10th death in the county was examined, because it was largely before any interventions were in place. Examining the growth rates beyond that point would have been confounded by how early stay-at-home orders were put in place and how well they were adhered to. The growth rate in this early time window is a better reflection of that counties natural vulnerability.
 
 After preliminary data visualization, cleaning, and feature engineering machine learning algorithms were applied to determine if the degree of growth could be predicted accurately based off socio-economic and health data, and what factors were most important in producing an accurate prediction. After training and tuning the model it was able to accurately predict what degree of growth, in COVID-19 related deaths, a county would experience `r cf$overall["Accuracy"]` percent of the time. 
 
-The factors that were identified as important for accurate predictions were largely reflective of the type of socio-economic factors you might see in a city. Some of these included: population density per square mile, number of households with no vehicle, percent rurual (with a low percentage meaning an urban environment like a city), percent multi-unit housing, and average traffic volume per meter of highway. Perhaps the least intuitive factor that the algorithm picked up on is how Native Americans are being disproportionately effected by COVID-19. While this has not received the same media attention as areas like New York and New Jersey, this [Harvard Gazette article](https://news.harvard.edu/gazette/story/2020/05/the-impact-of-covid-19-on-native-american-communities/) states that the Navajo nation has the third highest per capita rate of COVID-19 in the country, as of April 30th. You can see this reflected in the map plots as the above average growth areas in seen in New Mexico and Arizona. While some of these factors may have been intuitive, hopefully this serves as a data driven approach into what made certain areas more vulnerable. 
+The factors that were identified as important for accurate predictions were largely reflective of the type of socio-economic factors you might see in a city. Some of these included: population density per square mile, number of households with no vehicle, percent rural (with a low percentage meaning an urban environment like a city), percent multi-unit housing, and average traffic volume per meter of highway. Perhaps the least intuitive factor that the algorithm picked up on is how Native Americans are being disproportionately effected by COVID-19. While this has not received the same media attention as areas like New York and New Jersey, this [Harvard Gazette article](https://news.harvard.edu/gazette/story/2020/05/the-impact-of-covid-19-on-native-american-communities/) states that the Navajo nation has the third highest per capita rate of COVID-19 in the country, as of April 30th. You can see this reflected in the map plots as the above average growth areas in seen in New Mexico and Arizona. While some of these factors may have been intuitive, hopefully this serves as a data driven approach into what made certain areas more vulnerable. 
 
-Some alternative approaches to this question, which may have yielded different results, include: using different machine learning models, predicting the growth as continuous instead of categorical outcome, and considering more factors for each county. Google has made mobility reports to see how COVID-19 has changed the way people moved around. Combining this data to the dataset analyzed for this project would enable assessing how effective stay-at-home orders were in different areas, how tightly they were complied with, and if socio-economic or health factors were predictive for their success or adherance. 
+Some alternative approaches to this question, which may have yielded different results, include: using different machine learning models, predicting the growth as continuous instead of categorical outcome, and considering more factors for each county. Google has made mobility reports to see how COVID-19 has changed the way people moved around. Combining this data to the data set analyzed for this project would enable assessing how effective stay-at-home orders were in different areas, how tightly they were complied with, and if socio-economic or health factors were predictive for their success or adherence. 
 
 # Appendix
 
