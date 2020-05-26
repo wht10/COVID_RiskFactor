@@ -246,7 +246,8 @@ tibble(corrs = cormat[upper.tri(cormat)]) %>%
   ylab("Count") + xlab("Correlation Values")
 
 #Showing summary of correlation
-  summary(corrs)
+corrs <-tibble(corrs = cormat[upper.tri(cormat)])
+summary(corrs)
 
   #calculating correlation and p value with rcorr function
 cor_ext <- rcorr(as.matrix(x1))
