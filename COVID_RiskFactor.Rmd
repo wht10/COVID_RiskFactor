@@ -79,11 +79,12 @@ library(Rtsne)
 I am not an epidemiologist or a health official. I am a Biomedical Engineer getting a PhD in Immunology from Duke, and an amateur Data Scientist. Conclusions made within the project, are not to be considered as fact.
 
 ## Introduction
+
 At the time of completion of this project the world is in the throws of the COVID-19 pandemic. Over 300,000 deaths have been attributed to COVID-19, with the United States being responsible for nearly a third, as of May 23rd. In order to slow the spread of the virus, many states elected to issue stay-at-home orders to reduce transmission. Stay-at-home orders, among other interventions, have resulted in a "bending" of the case and death curves in the US. At this time, many states are beginning lifting these orders with a wait and see approach to determine if transmission has slowed to a point that the healthcare system can handle. 
 
 While it is abundantly evident that COVID-19 has had a profound effect globally and in the US, it has also become clear that some areas were affected worse than others. What factors determine how quickly the virus grew in a given area remain to be totally understood. 
 
-This purpose of this project is to firstly complete the Capstone requirement for the Harvard Edx Data Science Specialization, and also to explore an interesting data set for a contemporary issue. These data that will be analyzed is publicly available information related to socio-economic and health data from counties and how they have been affected by the ongoing COVID-19 pandemic. The data was cleaned and aggregated by John Davis [JDruns](https://twitter.com/JDruns). Information detailing the source of the data, and how it was assembled can be found in John's [kaggle notebook link](https://www.kaggle.com/johnjdavisiv/us-counties-weather-health-covid19-data). The data has information on 2,896 counties in the United States (US), and their County-level health and socioeconomic data. Some counties are not included in the data set because of the sparsity of information available for these counties. 
+The purpose of this project is to firstly complete the Capstone requirement for the Harvard Edx Data Science Specialization, and also to explore an interesting data set for a contemporary issue. These data that will be analyzed is publicly available information related to socio-economic and health data from counties and how they have been affected by the ongoing COVID-19 pandemic. The data was cleaned and aggregated by John Davis [JDruns](https://twitter.com/JDruns). Information detailing the source of the data, and how it was assembled can be found in John's [kaggle notebook link](https://www.kaggle.com/johnjdavisiv/us-counties-weather-health-covid19-data). The data has information on 2,896 counties in the United States (US), and their County-level health and socioeconomic data. Some counties are not included in the data set because of the sparsity of information available for these counties. 
 
 **Sources for Data Analyzed**
 
@@ -96,13 +97,9 @@ These data will be used to visualize how COVID-19 has affected counties across t
 
 ## Success Criteria
 
-Since there is no specific success criteria defined for this project beyond demonstrating learning, the following criteria will also be added. Broadly speaking, success will be defined as being able to stratify counties based off an important COVID-19 related outcome, and being able to successfully predict that outcome from the available socio-economic and health data. 
+Since there are no specific success criteria defined for this project beyond demonstrating learning, the following criteria will also be added. Broadly speaking, success will be defined as being able to stratify counties based off an important COVID-19 related outcome, and being able to successfully predict that outcome from the available socio-economic and health data. 
 
 1. Demonstrate understanding of Data Science for the purpose of the Capstone Project
- 
-  *Data Visualization
-  *Data Wrangling 
-  *Machine Learning
 2. Define outcome to be predicted by Machine Learning Algorithm
 3. Build and optimize model for predicting outcome
 4. Identify factors that were important in driving accuracy of the model
@@ -138,7 +135,7 @@ red_covid  %>%
   kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-These data contain information for 2,896 counties over 115 days starting in January, and ending in mid-May. The first confirmed COVID-19 related death was widely considered to be on Feb.29th, but it was later determined to have been as early as Feb. 6th [Source](https://www.nbcnews.com/news/us-news/first-u-s-coronavirus-death-happened-weeks-earlier-originally-believed-n1189286).
+These data contain information for 2,896 counties over 115 days starting in January, and ending in mid-May. The first confirmed COVID-19 related death was widely considered to be on Feb.29th, but it was later determined to have been as early as [Feb. 6th](https://www.nbcnews.com/news/us-news/first-u-s-coronavirus-death-happened-weeks-earlier-originally-believed-n1189286).
 
 Additionally, the data contains over 200 county level factors constituted by the socio-economic and health data previously mentioned.
 
@@ -191,14 +188,16 @@ red_covid %>% filter(date == max(date)) %>%
 
 Surprisingly, over 40 percent of the counties with data have yet to have a COVID related death. This is important for model building, because if we try to predict deaths, roughly 60 percent of the data will not have a death outcome to predict. 
 
-It is worth noting that this is not because the death data is missing, as there are zero missing values. 
+It is worth noting that this is not because the death data is missing, as there are zero missing values. Although there were several counties that weren't found in the dataset, likely due to missing data. The missing counties are displayed as grey in the above map.
 
 ```{r missing-val-check,echo=TRUE}
 #missing value check
 sapply(red_covid,function(x)sum(is.na(x)))
 ```
+
 ## Outcome Definition
-Because the county data has more observations, as there are more counties than states, we will define our outcome using this variation of the data set.Below is a visualization of how COVID-19 deaths have grown over time in counties that have documented more than 10 COVID-19 deaths. For the purpose of this project, less than 10 deaths in a county over 115 days observed will be considered negligible growth. 
+
+Because the county data has more observations, as there are more counties than states, we will define our outcome using this variation of the data set. Below is a visualization of how COVID-19 deaths have grown over time in counties that have documented more than 10 COVID-19 deaths. For the purpose of this project, less than 10 deaths in a county over 115 days observed will be considered negligible growth. 
 
 ```{r plotting-county-death-v-time}
 #plotting by county over time 
@@ -235,6 +234,7 @@ red_covid %>%
   theme(legend.position = "none") + 
   ggtitle("COVID19 log(deaths) by US county")
 ```
+
 From this visual we can conclude that around 20 days after a counties 10th death, many of the curves leveled off. Interestingly, many of the log(death) curves are  mostly linear for the first 14 days. 
 
 ```{r fourteen-days-logdeath}
@@ -308,6 +308,7 @@ slopes %>% ggplot(aes(slope)) + geom_histogram() + geom_vline(xintercept =  mu, 
   labs(title ="Distribution of log(death) slopes") + ylab("Number of Counties") +
        xlab("Slope of Log(death) vs. Time") 
 ```
+
 This distribution also shows that most counties have a relatively slow growth, with some outliers that are quite fast. 
 
 We can categorize the slopes as having no growth, below average growth, and above average growth. With no growth being defined as having fewer than 10 deaths, or a negative slope. 
@@ -330,6 +331,7 @@ plot_usmap(region = "counties",data = fac_plot_dat, values = "slope", color = "b
 ```
 
 The counties with the top 10 growth rates were primarily the ones people heard on the news. `fct_slp` is the variable name being used to store the growth category data. 
+
 ```{r table-of-high-growth-counties}
 #summarizing high slope data
 red_covid_slope %>% select(state,county,slope,fct_slp) %>% 
@@ -353,6 +355,7 @@ dat <- covid[,2:166] %>%
 dat %>% ggplot(aes(fct_slope)) + geom_bar() + ggtitle("Distribution of Slope Categories") +
   ylab("Count") + xlab("Log_death Slope Categories")
 ```
+
 Again, from the above graph it becomes evident that the majority of counties experienced negligible or no growth. 
 
 ```{r summarising-category-proportions}
@@ -362,11 +365,13 @@ dat %>% group_by(fct_slope) %>%
    kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
+
 Approximately 80% of the data has little to no growth, and 20% experienced growth. 
 
 These categories will serve as the outcomes that we will try to predict with the features that are available in the data. 
 
 ## Data Cleaning
+
 While there was no missing data in the cases and fatality data there are missing values in the predictor/feature data. 
 ```{r dealing-with-missing-data}
 na_list <- sapply(dat,function(x)sum(is.na(x)))
@@ -385,6 +390,7 @@ sparse_features <- tibble(missing_val = na_list, colname = names(na_list)) %>%
 #removing features with more than 20% of data missing
 clean_dat <- dat %>% select(-all_of(sparse_features))
 ```
+
 For this data, anything with more than 50 percent missing data, will be considered too sparse to impute. 
 
 ## Feature Engineering
@@ -495,7 +501,7 @@ tibble(corrs = cormat[upper.tri(cormat)]) %>%
   ylab("Count") + xlab("Correlation Values")
 ```
 
-Considering this, a cutoff for being considered highly correlated will be set at .8. 
+Considering this, a cutoff for being considered highly correlated will be set at an absolute value of .8. 
 
 A data set is created that has the highly correlated features removed.
 
@@ -525,6 +531,7 @@ cor_ext_cor_out <- rcorr(as.matrix(x1_cor_out))
 corrplot(cor_ext_cor_out$r,type = "upper",order = "hclust", method = "shade",
          p.mat = cor_ext_cor_out$P,sig.level = .01, insig = "blank",tl.pos = "n")
 ```
+
 The imputed, normalized, and un-correlated data is now ready for the next step. 
 
 ## Clustering
@@ -572,7 +579,7 @@ sum_pca_wo_cors$importance[,1:2] %>%
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
 
-Here we see more overlap with the the all the growth categories, this suggests the data without the correlated features will have worse ability to resolve differences in groups. The first two PCs of this data set explain about 30 percent. Further demonstrating that removing correlated variables might reduce the ability of the data to resolve the growth categories. 
+Here we see more overlap with all the growth categories, this suggests the data without the correlated features will have worse ability to resolve differences in groups. The first two PCs of this data set explain about 30 percent. Further demonstrating that removing correlated variables might reduce the ability of the data to resolve the growth categories. 
 
 ### t-SNE
 
@@ -612,7 +619,7 @@ nocor <- x1_cor_out %>% add_column(fct_slope = y)
 #getting training and validation sets for the data with correlated features
 edx_cor <- cor[edxIndex,]
 validation_cor <-cor[-edxIndex,]
-#subsettign data that has highly correlated features removed
+#subsetting data that has highly correlated features removed
 edx_no_cor <- nocor[edxIndex,]
 validation_no_cor <- nocor[-edxIndex,]
 ```
@@ -738,7 +745,7 @@ data_frame(Important_Features = impvars_knn) %>% kable(.,"latex",booktabs = T) %
 ```
 The top 10 important features, roughly describe urban areas. From our previous COVID-19 growth plots displayed on maps, we know that this is often where the growth was the highest. It is interesting to see these features identified by a machine learning algorithm, even if some of them may have been intuitive. 
 
-We will confirm these features with a second machine learning model to determine the there is consensus on what factors are important between algorithms. 
+We will confirm these features with a second machine learning model to determine that there is consensus on what factors are important between algorithms. 
 
 ### Variable Importance - CART
 Classification and Regression Trees (CART), is a machine learning algorithm where a series of yes or no questions are asked and the answer generates a branch, which eventually leads to a classification. The decision trees these models produce are easy to interpret, and visually show which factors are important. 
@@ -775,7 +782,7 @@ The important variables in both models are largely overlapping, and the interpre
 
 ### Model Validation
 
-The Yeo-Johnson transformed, normalized kNN model with correlates will be used to predict the growth category for each county in the validation data set. 
+The normalized, tuned, kNN model with correlates will be used to predict the growth category for each county in the validation data set, considering this had the highest accuracy. 
 
 # Results
 ```{r validation calac}
@@ -825,17 +832,18 @@ results <- results %>% add_row(Method = "Tuned kNN",
 results %>% kable(.,"latex",booktabs = T) %>% 
   kable_styling(latex_options =c("striped"),font_size = 11)
 ```
-The normalized data, with tuned parameters, in the kNN model successfully predicted the growth category for each county `r cf$overall["Accuracy"]` percent of the time.
+
+The normalized data, with tuned parameters, in the kNN model successfully predicted the growth category for each county `r cf$overall["Accuracy"]*100` percent of the time.
 
 # Conclusions
 ## Summary and Future Directions
 The COVID-19 pandemic has led to a tremendous loss of life, and totally transformed society in a matter of a few months. However this catastrophe has not had an equal effect in all regions of the world, and within the US. Leaving many to wonder, what determines whether the virus will creep along in a given area or if it will see explosive growth.This project focused on utilizing county-level COVID-19, socio-economic and health data to determine what factors were important in the early days of the pandemic. The rate of growth in COVID-19 related fatalities in a given county was selected as the outcome to be predicted as opposed to cases because case numbers are largely a function of amount and type of testing being conducted, which varies widely across counties. However, the fatality data is more standardized, although surely contains some reporting error still. The growth of COVID-19 related fatalities in the first 14 days after the 10th death in the county was examined, because it was largely before any interventions were in place. Examining the growth rates beyond that point would have been confounded by how early stay-at-home orders were put in place and how well they were adhered to. The growth rate in this early time window is a better reflection of that counties natural vulnerability.
 
-After preliminary data visualization, cleaning, and feature engineering machine learning algorithms were applied to determine if the degree of growth could be predicted accurately based off socio-economic and health data, and what factors were most important in producing an accurate prediction. After training and tuning the model it was able to accurately predict what degree of growth, in COVID-19 related deaths, a county would experience `r cf$overall["Accuracy"]` percent of the time. 
+After preliminary data visualization, cleaning, and feature engineering machine learning algorithms were applied to determine if the degree of growth could be predicted accurately based off socio-economic and health data, and what factors were most important in producing an accurate prediction. After training and tuning the model it was able to accurately predict what degree of growth, in COVID-19 related deaths, a county would experience `r cf$overall["Accuracy"]*100` percent of the time. 
 
 The factors that were identified as important for accurate predictions were largely reflective of the type of socio-economic factors you might see in a city. Some of these included: population density per square mile, number of households with no vehicle, percent rural (with a low percentage meaning an urban environment like a city), percent multi-unit housing, and average traffic volume per meter of highway. Perhaps the least intuitive factor that the algorithm picked up on is how Native Americans are being disproportionately affected by COVID-19. While this has not received the same media attention as areas like New York and New Jersey, this [Harvard Gazette article](https://news.harvard.edu/gazette/story/2020/05/the-impact-of-covid-19-on-native-american-communities/) states that the Navajo nation has the third highest per capita rate of COVID-19 in the country, as of April 30th. You can see this reflected in the map plots as the above average growth areas in seen in New Mexico and Arizona. While some of these factors may have been intuitive, hopefully this serves as a data driven approach into what made certain areas more vulnerable. 
 
-Some alternative approaches to this question, which may have yielded different results, include: using different machine learning models, predicting the growth as continuous instead of categorical outcome, and considering more factors for each county. Google has made [mobility reports available](https://www.blog.google/technology/health/covid-19-community-mobility-reports?hl=en) to see how COVID-19 has changed the way people move around. Joining this data with the data set analyzed for this project would enable assessing how effective stay-at-home orders were in different areas, how tightly they were complied with, and if socio-economic or health factors were predictive for their success or adherence. 
+Some alternative approaches to this question, which may have yielded different results, include: using more robust machine learning like boosted random forrest, predicting the growth as continuous instead of categorical outcome, and considering more factors for each county. Google has made [mobility reports available](https://www.blog.google/technology/health/covid-19-community-mobility-reports?hl=en) to see how COVID-19 has changed the way people move around. Joining this data with the data set analyzed for this project would enable assessing how effective stay-at-home orders were in different areas, how tightly they were complied with, and if socio-economic or health factors were predictive for their success or adherence. Lastly, this dataset is considerably unbalanced, with low/no growth counties greatly outnumbering counties with appreciable growth. This makes this dataset a great candidate for resampling. Tools like SMOTE and Tomek links could be used to undersample the low/no growth cases and upsample the growth cases. This would further improve the sensitivity and recall of the model.
 
 # Appendix
 
